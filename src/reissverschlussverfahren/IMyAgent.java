@@ -2,7 +2,9 @@ package reissverschlussverfahren;
 
 public interface IMyAgent {
 	
-	void beschleunigen();
+	void step();
+	
+	void accelerate();
 	
 	void abbremsen();
 }
