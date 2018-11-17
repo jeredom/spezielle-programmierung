@@ -4,6 +4,6 @@ import reissverschlussverfahren.IMyAgent;
 
 public class Hindernis implements IMyAgent{
 	
-	
+	 
 
 }
