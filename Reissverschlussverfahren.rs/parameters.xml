@@ -7,7 +7,7 @@
 									
 		/>
 				<parameter name="spacewidth" displayName="space width" type="java.lang.Integer" 
-						defaultValue="10" 
+						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -19,7 +19,7 @@
 									
 		/>
 				<parameter name="spaceheight" displayName="space height" type="java.lang.Integer" 
-						defaultValue="10" 
+						defaultValue="7" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									

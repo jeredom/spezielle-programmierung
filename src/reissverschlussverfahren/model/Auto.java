@@ -14,15 +14,16 @@ public class Auto implements IMyAgent {
 	public final Double maxNegativeBeschleunigung;
 	private ContinuousSpace<Object> continuousSpace;
 	
-	public Auto(ContinuousSpace<Object> continuousSpace, Double höchstgeschwindigkeit, Double maxPositiveBeschleunigung, Double maxNegativeBeschleunigung) {
+	public Auto(ContinuousSpace<Object> continuousSpace, Double hoechstgeschwindigkeit, Double maxPositiveBeschleunigung, Double maxNegativeBeschleunigung) {
 		this.continuousSpace = continuousSpace;
-		this.hoechstgeschwindigkeit = höchstgeschwindigkeit;
+		this.hoechstgeschwindigkeit = hoechstgeschwindigkeit;
 		this.maxPositiveBeschleunigung = maxPositiveBeschleunigung;
 		this.maxNegativeBeschleunigung = maxNegativeBeschleunigung;
 		
 		ScheduleParameters sp = ScheduleParameters.createRepeating(1, 1);
 		RunEnvironment.getInstance().getCurrentSchedule().schedule(sp, this, "step");
 	}
+	
 	
 	public void step() {
 		if(aktuelleGeschwindigkeit < hoechstgeschwindigkeit) {
@@ -37,20 +38,23 @@ public class Auto implements IMyAgent {
 		Double neuXAchsenLocation;
 		
 		if(differenz > maxPositiveBeschleunigung) {
-			neuXAchsenLocation = continuousSpace.getLocation(this).getX() + aktuelleGeschwindigkeit + maxPositiveBeschleunigung;
+			neuXAchsenLocation = continuousSpace.getLocation(this).getX() + (aktuelleGeschwindigkeit + maxPositiveBeschleunigung)/100;
 			aktuelleGeschwindigkeit = aktuelleGeschwindigkeit + maxPositiveBeschleunigung;
 		}else {
-			neuXAchsenLocation = continuousSpace.getLocation(this).getX() + aktuelleGeschwindigkeit + differenz;
+			neuXAchsenLocation = continuousSpace.getLocation(this).getX() + (aktuelleGeschwindigkeit + differenz)/100;
 			aktuelleGeschwindigkeit = hoechstgeschwindigkeit;
 		}
-			NdPoint newLocation = new NdPoint(neuXAchsenLocation, 2d);
-			continuousSpace.moveByDisplacement(this, newLocation.getX());	
+			NdPoint newLocation = new NdPoint(neuXAchsenLocation, continuousSpace.getLocation(this).getY());
+			continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());	
+			System.out.println("beschleunigen\n" + "Besch." + aktuelleGeschwindigkeit + "Pos." +  continuousSpace.getLocation(this).getX());
 	}
 	
 	public void fahren() {
-		Double neuXAchsenLocation = continuousSpace.getLocation(this).getX() + hoechstgeschwindigkeit;
-		NdPoint newLocation = new NdPoint(neuXAchsenLocation, 2d);
-		continuousSpace.moveByDisplacement(this, newLocation.getX());	
+		Double neuXAchsenLocation = continuousSpace.getLocation(this).getX() + (hoechstgeschwindigkeit/100);
+		NdPoint newLocation = new NdPoint(neuXAchsenLocation, continuousSpace.getLocation(this).getY());
+		continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());
+		System.out.println("fahren\n" + "Besch." + aktuelleGeschwindigkeit + "Pos." +  continuousSpace.getLocation(this).getX());
+
 	}
 
 	public void abbremsen() {
@@ -65,7 +69,7 @@ public class Auto implements IMyAgent {
 			aktuelleGeschwindigkeit = 0d;
 		}
 		NdPoint newLocation = new NdPoint(neuXAchsenLocation, 2d);
-		continuousSpace.moveByDisplacement(this, newLocation.getX());	
+		continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());	
 		
 	}
 

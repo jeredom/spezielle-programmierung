@@ -1,7 +1,4 @@
 <context id="Reissverschlussverfahren" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://repast.org/scenario/context">
-	<projection type="continuous space" id="space">
-		<attribute type="int" value="10" id="width" /><attribute
-			type="int" value="10" id="height" /><attribute type="string"
-			value="bouncy" id="border rule" /></projection>
+	<projection type="continuous space" id="space"></projection>
 
 </context>
