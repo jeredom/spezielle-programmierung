@@ -1,5 +1,5 @@
 package reissverschlussverfahren;
 
-public interface IMyAgent {
+public class IMyAgent {
 	
 }

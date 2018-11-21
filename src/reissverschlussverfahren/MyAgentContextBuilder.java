@@ -40,10 +40,13 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 	private void addAgentsToContinuousSpace(Context<IMyAgent> context, ContinuousSpace<Object> continuousSpace) {
 		
 		// 50 Autos mit Random Geschwindigkeit und Random Spur hinzufügen
+		Double spawnPoint = 0d;
 		for(int i = 0; i < 50; i++) {
 			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d) , 6d, -6d);
 			context.add(auto);
-			continuousSpace.moveTo(auto, 0d, spur());
+			spawnPoint = spawnPoint +2;
+					
+			continuousSpace.moveTo(auto, spawnPoint, spur());
 		}
 
 		Hindernis hindernis = new Hindernis();

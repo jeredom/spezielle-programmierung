@@ -870,3 +870,22 @@ Caused by: java.lang.IllegalArgumentException: An object's new location must hav
 	at reissverschlussverfahren.model.Auto.beschleunigen(Auto.java:48)
 	at reissverschlussverfahren.model.Auto.step(Auto.java:30)
 	... 9 more
+FATAL [Thread-7] 2018-11-21 16:07:09,783 repast.simphony.ui.GUIScheduleRunner - RunTimeException when running the schedule
+Current tick (1.0)
+java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
+	at repast.simphony.engine.schedule.CallBackAction.execute(CallBackAction.java:129)
+	at repast.simphony.engine.schedule.DefaultAction.execute(DefaultAction.java:38)
+	at repast.simphony.engine.schedule.ScheduleGroup.executeList(ScheduleGroup.java:205)
+	at repast.simphony.engine.schedule.ScheduleGroup.execute(ScheduleGroup.java:231)
+	at repast.simphony.engine.schedule.Schedule.execute(Schedule.java:352)
+	at repast.simphony.ui.GUIScheduleRunner$ScheduleLoopRunnable.run(GUIScheduleRunner.java:52)
+	at java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.reflect.InvocationTargetException
+	at reissverschlussverfahren.model.Auto$$FastClassByCGLIB$$349be065.invoke(<generated>)
+	at net.sf.cglib.reflect.FastMethod.invoke(FastMethod.java:53)
+	at repast.simphony.engine.schedule.CallBackAction.execute(CallBackAction.java:127)
+	... 6 more
+Caused by: java.lang.ClassCastException: repast.simphony.context.space.continuous.ContextSpace cannot be cast to repast.simphony.context.Context
+	at reissverschlussverfahren.model.Auto.umgebungNachAutosChecken(Auto.java:89)
+	at reissverschlussverfahren.model.Auto.step(Auto.java:36)
+	... 9 more
