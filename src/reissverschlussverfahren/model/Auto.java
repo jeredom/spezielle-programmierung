@@ -1,10 +1,10 @@
 package reissverschlussverfahren.model;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import reissverschlussverfahren.IMyAgent;
-import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.query.space.continuous.ContinuousWithin;
@@ -55,8 +55,6 @@ public class Auto extends IMyAgent {
 		}
 		NdPoint newLocation = new NdPoint(neuXAchsenLocation, continuousSpace.getLocation(this).getY());
 		continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());
-		System.out.println("beschleunigen\n" + "Besch." + aktuelleGeschwindigkeit + "Pos."
-				+ continuousSpace.getLocation(this).getX());
 	}
 
 	public void fahren() {
@@ -109,6 +107,7 @@ public class Auto extends IMyAgent {
 					double difference = locationHindernis - locationThisCarX_2;
 					if (difference < 3d) {
 						sollBremsen = true;
+						abbiegen();
 					}
 				}
 
@@ -118,4 +117,35 @@ public class Auto extends IMyAgent {
 		return sollBremsen;
 	}
 
+	private void abbiegen() {
+
+		ContinuousWithin<Object> withinDistance = new ContinuousWithin<Object>(continuousSpace, this, 15d);
+		List<Object> orderedList = new ArrayList<Object>();
+		for (Object agent : withinDistance.query()) {
+			orderedList.add(agent);
+		}
+		for (Object agent : withinDistance.query()) {
+			if (agent.getClass() == Auto.class) {
+				
+				double locationOtherCarX = continuousSpace.getLocation(agent).getX();
+				double locationOtherCarY = continuousSpace.getLocation(agent).getY();
+				double locationThisCarX = continuousSpace.getLocation(this).getX();
+				
+				if (locationOtherCarY == 1.5d) {
+					double differenz = continuousSpace.getLocation(this).getX() - continuousSpace.getLocation(agent).getX();
+					System.out.println(differenz);
+					if (locationOtherCarX < locationThisCarX && locationOtherCarX < locationThisCarX-4d ) {
+						break;
+					}
+					else {
+						continuousSpace.moveTo(this, continuousSpace.getLocation(this).getX(), continuousSpace.getLocation(this).getY()-3d);	
+					}
+				}								
+					
+//					NdPoint locationThisCarOtherLine= new NdPoint(continuousSpace.getLocation(this).getX(),continuousSpace.getLocation(this).getY()-3d);
+//					NdPoint locationCarsOtherLine= new NdPoint(locationOtherCarX,locationOtherCarY);
+//					continuousSpace.getDisplacement(locationCarsOtherLine, locationThisCarOtherLine);
+				}					
+		}
+	}
 }

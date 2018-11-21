@@ -41,7 +41,7 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		
 		// 50 Autos mit Random Geschwindigkeit und Random Spur hinzufügen
 		Double spawnPoint = 0d;
-		for(int i = 0; i < 50; i++) {
+		for(int i = 0; i < 20; i++) {
 			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d) , 6d, -6d);
 			context.add(auto);
 			spawnPoint = spawnPoint +2;
