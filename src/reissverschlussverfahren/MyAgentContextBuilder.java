@@ -1,5 +1,7 @@
 package reissverschlussverfahren;
 
+import java.util.Random;
+
 import reissverschlussverfahren.model.Auto;
 import reissverschlussverfahren.model.Hindernis;
 import repast.simphony.context.Context;
@@ -36,18 +38,29 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 	}
 
 	private void addAgentsToContinuousSpace(Context<IMyAgent> context, ContinuousSpace<Object> continuousSpace) {
-		Auto auto = new Auto(continuousSpace, 100d, 6d, -6d);
-		Auto auto1 = new Auto(continuousSpace, 50d, 6d, -6d);
+		
+		// 50 Autos mit Random Geschwindigkeit und Random Spur hinzufügen
+		for(int i = 0; i < 50; i++) {
+			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d) , 6d, -6d);
+			context.add(auto);
+			continuousSpace.moveTo(auto, 0d, spur());
+		}
 
 		Hindernis hindernis = new Hindernis();
-		context.add(auto);
-		context.add(auto1);
-
-		continuousSpace.moveTo(auto, 0d, 1.5d);
-		continuousSpace.moveTo(auto1, 0d, 4.5d);
-
 		context.add(hindernis);
 		continuousSpace.moveTo(hindernis, 50.0d, 5d);
+	}
+	
+	private double geschwindigkeit(double min, double max) {
+		Random r = new Random();
+		return min + (max - min) * r.nextDouble();
+	}
+	
+	private double spur() {
+		Random random = new Random();
+	    boolean ersteSpur = random.nextBoolean();
+	    if (ersteSpur) return 1.5d;
+	    else return 4.5d;
 	}
 
 }
