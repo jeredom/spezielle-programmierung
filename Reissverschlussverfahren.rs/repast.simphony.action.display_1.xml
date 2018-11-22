@@ -3,6 +3,10 @@
   <type>2D</type>
   <styles>
     <entry>
+      <string>reissverschlussverfahren.model.Street</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
+    </entry>
+    <entry>
       <string>reissverschlussverfahren.model.Hindernis</string>
       <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
@@ -12,6 +16,10 @@
     </entry>
   </styles>
   <editedStyles>
+    <entry>
+      <string>reissverschlussverfahren.model.Street</string>
+      <string>reissverschlussverfahren.model.Street.style_6.xml</string>
+    </entry>
     <entry>
       <string>reissverschlussverfahren.model.Hindernis</string>
       <string>reissverschlussverfahren.model.Hindernis.style_0.xml</string>
@@ -31,15 +39,19 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-1265823243</hashCode>
+    <hashCode>-1389552898</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>space</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
-      <string>reissverschlussverfahren.model.Hindernis</string>
+      <string>reissverschlussverfahren.model.Street</string>
       <int>0</int>
+    </entry>
+    <entry>
+      <string>reissverschlussverfahren.model.Hindernis</string>
+      <int>2</int>
     </entry>
     <entry>
       <string>reissverschlussverfahren.model.Auto</string>
