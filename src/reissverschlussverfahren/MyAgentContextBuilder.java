@@ -71,6 +71,6 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		if (ersteSpur)
 			return 1.5d;
 		else
-			return 4.8d;
+			return 4.5d;
 	}
 }

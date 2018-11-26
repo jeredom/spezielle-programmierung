@@ -31,10 +31,10 @@ public class Auto extends IMyAgent {
 
 	public void step() {
 
-		if (!findAgentsinRadius()) {
+		if (!areAgentsInRadius()) {
 			if (aktuelleGeschwindigkeit < hoechstgeschwindigkeit) {
 				if(shouldAccelerate()) {
-					beschleunigen();
+					accelerate();
 				}else {
 					driveWithCurrentSpeed();
 				}
@@ -45,7 +45,7 @@ public class Auto extends IMyAgent {
 		}
 	}
 
-	private void beschleunigen() {
+	private void accelerate() {
 		Double differenz = hoechstgeschwindigkeit - aktuelleGeschwindigkeit;
 		Double neuXAchsenLocation;
 
@@ -115,7 +115,7 @@ public class Auto extends IMyAgent {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean findAgentsinRadius() {
+	private boolean areAgentsInRadius() {
 
 		boolean sollBremsen = false;
 		ContinuousWithin<Object> withinDistance = new ContinuousWithin<Object>(continuousSpace, this, 2d);
@@ -135,12 +135,11 @@ public class Auto extends IMyAgent {
 				double locationThisCarX_2 = continuousSpace.getLocation(this).getX();
 				if (locationHindernis > locationThisCarX_2) {
 					double difference = locationHindernis - locationThisCarX_2;
-					if (difference < 3d) {
+					if (difference < 2d) {
 						sollBremsen = true;
 						changeFromLeftToRightLane();
 					}
 				}
-
 			}
 
 		}
@@ -163,7 +162,6 @@ public class Auto extends IMyAgent {
 			return;
 		}else {
 			locationNearestCarRightLine = Collections.max(orderedAgentXAxisPositionList);
-
 		}
 		
 		if (locationNearestCarRightLine > continuousSpace.getLocation(this).getX()-3d ) {
