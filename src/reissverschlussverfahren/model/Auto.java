@@ -38,8 +38,7 @@ public class Auto extends IMyAgent {
 				}else {
 					driveWithCurrentSpeed();
 				}
-			}
-			if (aktuelleGeschwindigkeit.equals(hoechstgeschwindigkeit)) {
+			}else if (aktuelleGeschwindigkeit.equals(hoechstgeschwindigkeit)) {
 				driveWithMaximumSpeed();
 			}
 		}
@@ -80,7 +79,7 @@ public class Auto extends IMyAgent {
 	}
 	
 	private boolean shouldAccelerate() {
-		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, 2d);
+		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, 3d);
 		List<Object> orderedAgentXAxisPositionList = new ArrayList<Object>();
 		boolean shouldAccelerate = false;
 		for (Object cars : withinDistanceQuery.query()) {
@@ -96,48 +95,32 @@ public class Auto extends IMyAgent {
 		return shouldAccelerate;
 	}
 
-	private void abbremsen() {
-		Double differenz = aktuelleGeschwindigkeit - maxNegativeBeschleunigung;
-		Double neuXAchsenLocation;
-
-		if (differenz > 0) {
-			neuXAchsenLocation = continuousSpace.getLocation(this).getX() + aktuelleGeschwindigkeit
-					+ maxNegativeBeschleunigung;
-			aktuelleGeschwindigkeit = aktuelleGeschwindigkeit + maxPositiveBeschleunigung;
-		} else {
-			neuXAchsenLocation = continuousSpace.getLocation(this).getX() + aktuelleGeschwindigkeit + differenz;
-			aktuelleGeschwindigkeit = 0d;
-			
-		}
-		NdPoint newLocation = new NdPoint(neuXAchsenLocation, 2d);
-		continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());
-
-	}
-
 	@SuppressWarnings("unchecked")
 	private boolean areAgentsInRadius() {
 
 		boolean sollBremsen = false;
-		ContinuousWithin<Object> withinDistance = new ContinuousWithin<Object>(continuousSpace, this, 2d);
+		double locationThisCarX;
+		ContinuousWithin<Object> withinDistance = new ContinuousWithin<Object>(continuousSpace, this, 3d);
 		for (Object agent : withinDistance.query()) {
 			if (agent.getClass() == Auto.class) {
 				double locationOtherCarX = continuousSpace.getLocation(agent).getX();
-				double locationThisCarX = continuousSpace.getLocation(this).getX();
+				locationThisCarX = continuousSpace.getLocation(this).getX();
 				if (locationOtherCarX > locationThisCarX) {
 					double difference = locationOtherCarX - locationThisCarX;
-					if (difference < 2d) {
+					if (difference < 4d) {
 						sollBremsen = true;
+						changeLaneIfPossible();
 					}
 				}
 			}
 			if (agent.getClass() == Hindernis.class) {
 				double locationHindernis = continuousSpace.getLocation(agent).getX();
-				double locationThisCarX_2 = continuousSpace.getLocation(this).getX();
-				if (locationHindernis > locationThisCarX_2) {
-					double difference = locationHindernis - locationThisCarX_2;
-					if (difference < 2d) {
+				locationThisCarX = continuousSpace.getLocation(this).getX();
+				if (locationHindernis > locationThisCarX) {
+					double difference = locationHindernis - locationThisCarX;
+					if (difference < 4d) {
 						sollBremsen = true;
-						changeFromLeftToRightLane();
+						changeLaneIfPossible();
 					}
 				}
 			}
@@ -145,46 +128,55 @@ public class Auto extends IMyAgent {
 		}
 		return sollBremsen;
 	}
-	
-	private void changeFromRightToLeftLane() {
-		
-	}
 
-	private void changeFromLeftToRightLane() {
-		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, 5d);
-		List<Double> orderedAgentXAxisPositionList = new ArrayList<Double>();
-		double rightLaneYPosition = 1.5d;
-		for (Object cars : withinDistanceQuery.query()) {
-			if(continuousSpace.getLocation(cars).getY() == rightLaneYPosition && continuousSpace.getLocation(cars).getX() < continuousSpace.getLocation(this).getX()+1d) {	
-				orderedAgentXAxisPositionList.add(continuousSpace.getLocation(cars).getX());
+	private void changeLaneIfPossible() {
+		List<Double> carsInRadiusOnOppositeLane = getCarsInRadiusOnOppositeLane();
+		double locationNearestCarOppositeLane;
+		if(carsInRadiusOnOppositeLane.isEmpty()) {
+			moveCarToOppositeLane();
+		}else if(!carsInRadiusOnOppositeLane.isEmpty()) {
+			locationNearestCarOppositeLane = Collections.max(carsInRadiusOnOppositeLane);
+			if (locationNearestCarOppositeLane < continuousSpace.getLocation(this).getX()-3d ) {
+				moveCarToOppositeLane();
 			}
 		}
-		
-		double locationNearestCarRightLine;
-		if(orderedAgentXAxisPositionList.isEmpty()) {
-			moveCarFromLeftToRigtLane();
-			return;
-		}else {
-			locationNearestCarRightLine = Collections.max(orderedAgentXAxisPositionList);
-		}
-		
-		if (locationNearestCarRightLine > continuousSpace.getLocation(this).getX()-3d ) {
-			return;
-		}
-		else {
-			moveCarFromLeftToRigtLane();
-		}
-		System.out.println(orderedAgentXAxisPositionList);
 	}
 	
-	private void moveCarFromLeftToRigtLane() {
-		double distancebetweenLanes = 3d;
-		continuousSpace.moveTo(this, continuousSpace.getLocation(this).getX(), continuousSpace.getLocation(this).getY() - distancebetweenLanes);
+	private List<Double> getCarsInRadiusOnOppositeLane() {
+		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, 5d);
+		List<Double> orderedAgentXAxisPositionList = new ArrayList<Double>();
+		double locationThisCarXAxis = continuousSpace.getLocation(this).getX();
+		double locationThisCarYAxis = continuousSpace.getLocation(this).getY();
+		double rightLaneYPosition = 1.5d;		
+		double leftLaneYPosition = 4.5d;
+		for (Object cars : withinDistanceQuery.query()) {
+			double locationCarXAxis = continuousSpace.getLocation(cars).getX();
+			double locationCarYAxis = continuousSpace.getLocation(cars).getY();
+			if(locationThisCarYAxis == leftLaneYPosition) {
+				if(locationCarYAxis == rightLaneYPosition &&
+						locationCarXAxis < locationThisCarXAxis + 3d) {	
+					orderedAgentXAxisPositionList.add(locationCarXAxis);
+				}
+			} else if(locationThisCarYAxis == rightLaneYPosition) {
+				if(locationCarYAxis == leftLaneYPosition &&
+						locationCarXAxis < locationThisCarXAxis + 3d) {	
+					orderedAgentXAxisPositionList.add(locationCarXAxis);
+				}
+			}	
+		}
+		return orderedAgentXAxisPositionList;
 	}
 	
-	private void moveCarFromRightToLeftLane() {
-		double distancebetweenLanes = 3d;
-		continuousSpace.moveTo(this, continuousSpace.getLocation(this).getX(), continuousSpace.getLocation(this).getY() + distancebetweenLanes);
-
+	private void moveCarToOppositeLane() {
+		double changeInYAxisPosition = 0d;
+		double locationThisCarYAxis = continuousSpace.getLocation(this).getY();
+		double rightLaneYPosition = 1.5d;		
+		double leftLaneYPosition = 4.5d;
+		if(locationThisCarYAxis == leftLaneYPosition) {
+			changeInYAxisPosition = -3d;
+		}else if(locationThisCarYAxis == rightLaneYPosition) {
+			changeInYAxisPosition = 3d;
+		}
+		continuousSpace.moveTo(this, continuousSpace.getLocation(this).getX(), continuousSpace.getLocation(this).getY() + changeInYAxisPosition);
 	}
 }
