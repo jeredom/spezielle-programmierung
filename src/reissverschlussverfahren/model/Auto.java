@@ -145,6 +145,10 @@ public class Auto extends IMyAgent {
 		}
 		return sollBremsen;
 	}
+	
+	private void changeFromRightToLeftLane() {
+		
+	}
 
 	private void changeFromLeftToRightLane() {
 		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, 5d);
