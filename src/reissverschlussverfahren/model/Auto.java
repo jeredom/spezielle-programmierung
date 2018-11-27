@@ -118,8 +118,11 @@ public class Auto extends IMyAgent {
 				}
 			}
 			if (agent.getClass() == Hindernis.class) {
+				
 				double locationHindernis = continuousSpace.getLocation(agent).getX();
 				locationThisCarX = continuousSpace.getLocation(this).getX();
+				double locationThisCarY = continuousSpace.getLocation(this).getY();
+				if (locationThisCarY == 4.5d) {
 				if (locationHindernis > locationThisCarX) {
 					double difference = locationHindernis - locationThisCarX;
 					if (difference < 4d) {
@@ -128,6 +131,7 @@ public class Auto extends IMyAgent {
 					}
 				}
 			}
+				}
 
 		}
 		return sollBremsen;
