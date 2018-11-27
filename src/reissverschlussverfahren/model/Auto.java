@@ -107,9 +107,13 @@ public class Auto extends IMyAgent {
 				locationThisCarX = continuousSpace.getLocation(this).getX();
 				if (locationOtherCarX > locationThisCarX) {
 					double difference = locationOtherCarX - locationThisCarX;
-					if (difference < 4d) {
+					if (difference < 4d  ) {
+						
 						sollBremsen = true;
-						changeLaneIfPossible();
+						
+						if (locationThisCarX >50.0d) {
+							changeLaneIfPossible();
+						}
 					}
 				}
 			}
