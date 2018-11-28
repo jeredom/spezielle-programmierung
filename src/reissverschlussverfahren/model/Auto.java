@@ -2,7 +2,9 @@ package reissverschlussverfahren.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import reissverschlussverfahren.IMyAgent;
 import repast.simphony.engine.environment.RunEnvironment;
@@ -18,30 +20,35 @@ public class Auto extends IMyAgent {
 	public final Double maxPositiveBeschleunigung;
 	public final Double maxNegativeBeschleunigung;
 	private ContinuousSpace<Object> continuousSpace;
+	public Double aggressiveness;
+	public boolean indicatingLaneChange;
+	public boolean isStanding;
+
 
 	public Auto(ContinuousSpace<Object> continuousSpace, Double hoechstgeschwindigkeit,
-			Double maxPositiveBeschleunigung, Double maxNegativeBeschleunigung) {
+			Double maxPositiveBeschleunigung, Double maxNegativeBeschleunigung, Double aggressiveness) {
 		this.continuousSpace = continuousSpace;
 		this.hoechstgeschwindigkeit = hoechstgeschwindigkeit;
 		this.maxPositiveBeschleunigung = maxPositiveBeschleunigung;
 		this.maxNegativeBeschleunigung = maxNegativeBeschleunigung;
+		this.aggressiveness = aggressiveness;
 		ScheduleParameters sp = ScheduleParameters.createRepeating(1, 1);
 		RunEnvironment.getInstance().getCurrentSchedule().schedule(sp, this, "step");
 	}
 
 	public void step() {
-
-		if (!areAgentsInRadius()) {
-			if (aktuelleGeschwindigkeit < hoechstgeschwindigkeit) {
-				if(shouldAccelerate()) {
-					accelerate();
-				}else {
-					driveWithCurrentSpeed();
+		isStanding = shouldBreakBecauseOfAgentsInFront();
+			if (!isStanding) {
+				if (aktuelleGeschwindigkeit < hoechstgeschwindigkeit) {
+					if(shouldAccelerate()) {
+						accelerate();
+					}else {
+						driveWithCurrentSpeed();
+					}
+				}else if (aktuelleGeschwindigkeit.equals(hoechstgeschwindigkeit)) {
+					driveWithMaximumSpeed();
 				}
-			}else if (aktuelleGeschwindigkeit.equals(hoechstgeschwindigkeit)) {
-				driveWithMaximumSpeed();
 			}
-		}
 	}
 
 	private void accelerate() {
@@ -64,8 +71,6 @@ public class Auto extends IMyAgent {
 		Double neuXAchsenLocation = continuousSpace.getLocation(this).getX() + (hoechstgeschwindigkeit / 100);
 		NdPoint newLocation = new NdPoint(neuXAchsenLocation, continuousSpace.getLocation(this).getY());
 		continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());
-		System.out.println(
-				"fahren\n" + "Besch." + aktuelleGeschwindigkeit + "Pos." + continuousSpace.getLocation(this).getX());
 
 	}
 	
@@ -73,8 +78,6 @@ public class Auto extends IMyAgent {
 		Double neuXAchsenLocation = continuousSpace.getLocation(this).getX() + (aktuelleGeschwindigkeit / 100);
 		NdPoint newLocation = new NdPoint(neuXAchsenLocation, continuousSpace.getLocation(this).getY());
 		continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());
-		System.out.println(
-				"fahren\n" + "Besch." + aktuelleGeschwindigkeit + "Pos." + continuousSpace.getLocation(this).getX());
 
 	}
 	
@@ -94,9 +97,9 @@ public class Auto extends IMyAgent {
 		
 		return shouldAccelerate;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	private boolean areAgentsInRadius() {
+	private boolean shouldBreakBecauseOfAgentsInFront() {
 
 		boolean sollBremsen = false;
 		double locationThisCarX;
@@ -107,11 +110,9 @@ public class Auto extends IMyAgent {
 				locationThisCarX = continuousSpace.getLocation(this).getX();
 				if (locationOtherCarX > locationThisCarX) {
 					double difference = locationOtherCarX - locationThisCarX;
-					if (difference < 4d  ) {
-						
+					if (difference < 4d) {
 						sollBremsen = true;
-						
-						if (locationThisCarX >50.0d) {
+						if (locationThisCarX > 50.0d) {
 							changeLaneIfPossible();
 						}
 					}
@@ -123,56 +124,80 @@ public class Auto extends IMyAgent {
 				locationThisCarX = continuousSpace.getLocation(this).getX();
 				double locationThisCarY = continuousSpace.getLocation(this).getY();
 				if (locationThisCarY == 4.5d) {
-				if (locationHindernis > locationThisCarX) {
-					double difference = locationHindernis - locationThisCarX;
-					if (difference < 4d) {
-						sollBremsen = true;
-						changeLaneIfPossible();
+					if (locationHindernis > locationThisCarX) {
+						double difference = locationHindernis - locationThisCarX;
+						if (difference < 4d) {
+							sollBremsen = true;
+							changeLaneIfPossible();
+						}
 					}
 				}
 			}
-				}
 
 		}
 		return sollBremsen;
 	}
 
-	private void changeLaneIfPossible() {
-		List<Double> carsInRadiusOnOppositeLane = getCarsInRadiusOnOppositeLane();
+	private boolean shouldBreakForCarToChangeLane() {
+		Map<Double, Object> orderedAgentMap = getCarsInRadiusOnOppositeLane();
+		List<Double> carsInRadiusOnOppositeLane = new ArrayList<Double>(orderedAgentMap.keySet());
 		double locationNearestCarOppositeLane;
+		double locationThisCarXAxis = continuousSpace.getLocation(this).getX();
+		boolean shouldBreak = false;
+		if(!orderedAgentMap.isEmpty()) {
+			locationNearestCarOppositeLane = Collections.max(carsInRadiusOnOppositeLane);
+			System.out.println("other car: "
+					+ locationNearestCarOppositeLane + " this car: " +  locationThisCarXAxis );
+			if(locationNearestCarOppositeLane > locationThisCarXAxis +3d && locationNearestCarOppositeLane < locationThisCarXAxis + 5d) {
+				Auto auto = (Auto) orderedAgentMap.get(locationNearestCarOppositeLane);
+				if(auto.isIndicatingLaneChange() == true) {
+					shouldBreak = true;
+				}
+			}
+		}
+		return shouldBreak;
+		
+	} 
+	
+	private void changeLaneIfPossible() {
+		Map<Double, Object> orderedAgentMap = getCarsInRadiusOnOppositeLane();
+		List<Double> carsInRadiusOnOppositeLane = new ArrayList<Double>(orderedAgentMap.keySet());
+		double locationNearestCarOppositeLane;
+		double locationThisCarXAxis = continuousSpace.getLocation(this).getX();
+		this.setIndicatingLaneChange(true);
 		if(carsInRadiusOnOppositeLane.isEmpty()) {
 			moveCarToOppositeLane();
 		}else if(!carsInRadiusOnOppositeLane.isEmpty()) {
 			locationNearestCarOppositeLane = Collections.max(carsInRadiusOnOppositeLane);
-			if (locationNearestCarOppositeLane < continuousSpace.getLocation(this).getX()-3d ) {
+			if (locationNearestCarOppositeLane < locationThisCarXAxis - 3d) {
 				moveCarToOppositeLane();
 			}
 		}
 	}
 	
-	private List<Double> getCarsInRadiusOnOppositeLane() {
+	private Map<Double, Object> getCarsInRadiusOnOppositeLane() {
 		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, 5d);
-		List<Double> orderedAgentXAxisPositionList = new ArrayList<Double>();
+		Map<Double, Object> orderedAgentMap = new HashMap<Double, Object>();
 		double locationThisCarXAxis = continuousSpace.getLocation(this).getX();
 		double locationThisCarYAxis = continuousSpace.getLocation(this).getY();
 		double rightLaneYPosition = 1.5d;		
 		double leftLaneYPosition = 4.5d;
-		for (Object cars : withinDistanceQuery.query()) {
-			double locationCarXAxis = continuousSpace.getLocation(cars).getX();
-			double locationCarYAxis = continuousSpace.getLocation(cars).getY();
+		for (Object car : withinDistanceQuery.query()) {
+			double locationCarXAxis = continuousSpace.getLocation(car).getX();
+			double locationCarYAxis = continuousSpace.getLocation(car).getY();
 			if(locationThisCarYAxis == leftLaneYPosition) {
 				if(locationCarYAxis == rightLaneYPosition &&
 						locationCarXAxis < locationThisCarXAxis + 3d) {	
-					orderedAgentXAxisPositionList.add(locationCarXAxis);
+					orderedAgentMap.put(locationCarXAxis, car);
 				}
 			} else if(locationThisCarYAxis == rightLaneYPosition) {
 				if(locationCarYAxis == leftLaneYPosition &&
 						locationCarXAxis < locationThisCarXAxis + 3d) {	
-					orderedAgentXAxisPositionList.add(locationCarXAxis);
+					orderedAgentMap.put(locationCarXAxis, car);
 				}
 			}	
 		}
-		return orderedAgentXAxisPositionList;
+		return orderedAgentMap;
 	}
 	
 	private void moveCarToOppositeLane() {
@@ -186,5 +211,13 @@ public class Auto extends IMyAgent {
 			changeInYAxisPosition = 3d;
 		}
 		continuousSpace.moveTo(this, continuousSpace.getLocation(this).getX(), continuousSpace.getLocation(this).getY() + changeInYAxisPosition);
+	}
+
+	public boolean isIndicatingLaneChange() {
+		return indicatingLaneChange;
+	}
+
+	public void setIndicatingLaneChange(boolean indicatingLaneChange) {
+		this.indicatingLaneChange = indicatingLaneChange;
 	}
 }
