@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import reissverschlussverfahren.IMyAgent;
+import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.query.space.continuous.ContinuousWithin;
@@ -78,6 +79,9 @@ public class Auto extends IMyAgent {
 
 	}
 	
+
+
+
 	private boolean shouldAccelerate() {
 		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, 3d);
 		List<Object> orderedAgentXAxisPositionList = new ArrayList<Object>();
@@ -186,5 +190,26 @@ public class Auto extends IMyAgent {
 			changeInYAxisPosition = 3d;
 		}
 		continuousSpace.moveTo(this, continuousSpace.getLocation(this).getX(), continuousSpace.getLocation(this).getY() + changeInYAxisPosition);
+	
+	}
+	
+	public Double getAktuelleGeschwindigkeit() {
+		return this.aktuelleGeschwindigkeit;
+	}
+
+	public void setAktuelleGeschwindigkeit(Double aktuelleGeschwindigkeit) {
+		this.aktuelleGeschwindigkeit = aktuelleGeschwindigkeit;
+	}
+
+	public Double getHoechstgeschwindigkeit() {
+		return hoechstgeschwindigkeit;
+	}
+
+	public Double getMaxPositiveBeschleunigung() {
+		return maxPositiveBeschleunigung;
+	}
+
+	public Double getMaxNegativeBeschleunigung() {
+		return maxNegativeBeschleunigung;
 	}
 }
