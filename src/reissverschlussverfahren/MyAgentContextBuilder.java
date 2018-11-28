@@ -16,6 +16,25 @@ import repast.simphony.space.continuous.RandomCartesianAdder;
 
 public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 
+	private double stdBuffer = 4d;
+	private int carCount = 20;
+	
+	public int getCarCount() {
+		return carCount;
+	}
+
+	public void setCarCount(int carCount) {
+		this.carCount = carCount;
+	}
+
+	public double getStdBuffer() {
+		return stdBuffer;
+	}
+
+	public void setStdBuffer(double stdBuffer) {
+		this.stdBuffer = stdBuffer;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Context<IMyAgent> build(Context<IMyAgent> context) {
@@ -25,13 +44,16 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		for (String s : p.getSchema().parameterNames()) {
 			System.out.println(s + "; ");
 		}
-
-		int xdim = p.getInteger("spacewidth");
-		int ydim = p.getInteger("spaceheight");
+		
+		this.setCarCount(p.getInteger("CarCount"));
+		this.setStdBuffer(p.getDouble("stdBuffer"));
+ 
+		//int xdim = p.getInteger("spacewidth");
+		//int ydim = p.getInteger("spaceheight");
 
 		ContinuousSpace<Object> continuousSpace = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null)
 				.createContinuousSpace("space", context, new RandomCartesianAdder(),
-						new repast.simphony.space.continuous.WrapAroundBorders(), xdim, ydim);
+						new repast.simphony.space.continuous.WrapAroundBorders(), 100, 7);
 		NetworkFactoryFinder.createNetworkFactory(null).createNetwork("SensorNetwork", context, false);
 
 		this.addAgentsToContinuousSpace(context, continuousSpace);
@@ -40,16 +62,15 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 	}
 
 	private void addAgentsToContinuousSpace(Context<IMyAgent> context, ContinuousSpace<Object> continuousSpace) {
-		Parameters p = RunEnvironment.getInstance().getParameters();
-		int carAmount = p.getInteger("CarAmount");
+
 		Street street = new Street();
 		context.add(street);
 		continuousSpace.moveTo(street, 50.0d, 3.5d);
 
-		// 50 Autos mit Random Geschwindigkeit und Random Spur hinzuf�gen
+		// 20 Autos mit Random Geschwindigkeit und Random Spur hinzuf�gen
 		Double spawnPoint = 0d;
-		for (int i = 0; i < carAmount; i++) {
-			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d), 6d, -6d);
+		for (int i = 0; i < this.getCarCount(); i++) {
+			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d), 6d, -6d,this.getStdBuffer());
 			context.add(auto);
 			spawnPoint = spawnPoint + 2;
 
@@ -74,4 +95,6 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		else
 			return 4.5d;
 	}
+	
+	
 }

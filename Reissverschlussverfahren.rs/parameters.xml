@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <parameters>
-					<parameter name="randomSeed" displayName="Default Random Seed" type="int" 
+					<parameter name="randomSeed" displayName="Seed (Zufall)" type="int" 
 						defaultValue="__NULL__"
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-									
-		/>
-				<parameter name="spacewidth" displayName="space width" type="java.lang.Integer" 
-						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -18,16 +12,16 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
-				<parameter name="spaceheight" displayName="space height" type="java.lang.Integer" 
-						defaultValue="7" 
+				<parameter name="CarCount" displayName="Anzahl Autos" type="int" 
+						defaultValue="20" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
-				<parameter name="CarAmount" displayName="CarAmount" type="int" 
-						defaultValue="20" 
+				<parameter name="stdBuffer" displayName="Sicherheitsabstand" type="double" 
+						defaultValue="3.0" 
 						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
 		</parameters>
