@@ -11,26 +11,24 @@ import repast.simphony.visualization.editedStyle.EditedStyleData;
 import repast.simphony.visualization.editedStyle.EditedStyleUtils;
 import repast.simphony.visualization.visualization2D.style.Style2D;
 
-
 //public class CarStyle extends EditedStyle2D implements Style2D<Object> {
-public class CarStyle extends EditedStyle2D{
+public class CarStyle extends EditedStyle2D {
 //	EditedStyleData<Object> innerStyle;
 //	private BufferedImage image;
 //	private Image image;
 //	String iconFile = null; 
 
-	
 	public CarStyle(String userStyleFile) {
-		
+
 		super(userStyleFile);
 	}
-	
+
 //	@Override
 //	public PText getLabel(Object object) {
 //		
-	
+
 //		//PText newLabel = super.getLabel(object);
-	
+
 //		PText newLabel = new PText();
 //
 //		PText label = null;
@@ -85,5 +83,5 @@ public class CarStyle extends EditedStyle2D{
 //		//newLabel.setTextPaint(new Color(255,165,0));
 //		return newLabel;
 //	}
-	
+
 }

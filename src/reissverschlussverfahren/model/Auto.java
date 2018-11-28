@@ -10,21 +10,35 @@ import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.query.space.continuous.ContinuousWithin;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
+import repast.simphony.ui.probe.ProbeID;
 
 public class Auto extends IMyAgent {
 
-	private double rightLaneYPosition = 1.5d;		
+	private double rightLaneYPosition = 1.5d;
 	private double leftLaneYPosition = 4.5d;
-	
+
 	public final Double hoechstgeschwindigkeit;
 	public Double aktuelleGeschwindigkeit = 0d;
 	public final Double maxPositiveBeschleunigung;
 	public final Double maxNegativeBeschleunigung;
 	private ContinuousSpace<Object> continuousSpace;
 	private double labelState;
-	private String signalState = "test";
+	private String signalState = " ";
 	private double stdBuffer = 3d;
-	
+	private int carId;
+
+	public Auto(ContinuousSpace<Object> continuousSpace, Double hoechstgeschwindigkeit,
+			Double maxPositiveBeschleunigung, Double maxNegativeBeschleunigung, Double paraBuffer, int carId) {
+		this.continuousSpace = continuousSpace;
+		this.hoechstgeschwindigkeit = hoechstgeschwindigkeit;
+		this.maxPositiveBeschleunigung = maxPositiveBeschleunigung;
+		this.maxNegativeBeschleunigung = maxNegativeBeschleunigung;
+		// this.stdBuffer = paraBuffer;
+		this.carId = carId;
+
+		ScheduleParameters sp = ScheduleParameters.createRepeating(1, 1);
+		RunEnvironment.getInstance().getCurrentSchedule().schedule(sp, this, "step");
+	}
 
 	public String getSignalState() {
 		return signalState;
@@ -34,30 +48,17 @@ public class Auto extends IMyAgent {
 		this.signalState = signalState;
 	}
 
-	public Auto(ContinuousSpace<Object> continuousSpace, Double hoechstgeschwindigkeit,
-			Double maxPositiveBeschleunigung, Double maxNegativeBeschleunigung, Double paraBuffer) {
-		this.continuousSpace = continuousSpace;
-		this.hoechstgeschwindigkeit = hoechstgeschwindigkeit;
-		this.maxPositiveBeschleunigung = maxPositiveBeschleunigung;
-		this.maxNegativeBeschleunigung = maxNegativeBeschleunigung;
-		//this.stdBuffer = paraBuffer;
-		
-		ScheduleParameters sp = ScheduleParameters.createRepeating(1, 1);
-		RunEnvironment.getInstance().getCurrentSchedule().schedule(sp, this, "step");
-	}
-
 	public void step() {
 
 		this.setLabelState(0.0);
-		if (!areAgentsInRadius()) {
-			setSignalState(" ");
+		if (!areCarsInRadius() && !isHindernisInRadius()) {
 			if (aktuelleGeschwindigkeit < hoechstgeschwindigkeit) {
-				if(shouldAccelerate()) {
+				if (shouldAccelerate()) {
 					accelerate();
-				}else {
+				} else {
 					driveWithCurrentSpeed();
 				}
-			}else if (aktuelleGeschwindigkeit.equals(hoechstgeschwindigkeit)) {
+			} else if (aktuelleGeschwindigkeit.equals(hoechstgeschwindigkeit)) {
 				driveWithMaximumSpeed();
 			}
 		}
@@ -87,7 +88,7 @@ public class Auto extends IMyAgent {
 				"fahren\n" + "Besch." + aktuelleGeschwindigkeit + "Pos." + continuousSpace.getLocation(this).getX());
 
 	}
-	
+
 	private void driveWithCurrentSpeed() {
 		Double neuXAchsenLocation = continuousSpace.getLocation(this).getX() + (aktuelleGeschwindigkeit / 100);
 		NdPoint newLocation = new NdPoint(neuXAchsenLocation, continuousSpace.getLocation(this).getY());
@@ -96,36 +97,39 @@ public class Auto extends IMyAgent {
 				"fahren\n" + "Besch." + aktuelleGeschwindigkeit + "Pos." + continuousSpace.getLocation(this).getX());
 
 	}
-	
-	
+
 	private boolean shouldAccelerate() {
-		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, this.stdBuffer);
+		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this,
+				this.stdBuffer);
 		List<Object> orderedAgentXAxisPositionList = new ArrayList<Object>();
 		boolean shouldAccelerate = false;
 		for (Object cars : withinDistanceQuery.query()) {
-			if(continuousSpace.getLocation(cars).getX() > continuousSpace.getLocation(this).getX()) {	
+			if (continuousSpace.getLocation(cars).getX() > continuousSpace.getLocation(this).getX()) {
 				orderedAgentXAxisPositionList.add(cars);
 			}
 		}
-		
-		if(orderedAgentXAxisPositionList.isEmpty()) { 
+
+		if (orderedAgentXAxisPositionList.isEmpty()) {
 			shouldAccelerate = true;
 		}
-		
+
 		return shouldAccelerate;
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean areAgentsInRadius() {
+	private boolean areCarsInRadius() {
 
 		boolean sollBremsen = false;
 		double locationThisCarX;
-		ContinuousWithin<Object> withinDistance = new ContinuousWithin<Object>(continuousSpace, this, this.stdBuffer);
+		double locationThisCarY;
+		ContinuousWithin<Object> withinDistance = new ContinuousWithin<Object>(continuousSpace, this, 5);
 		for (Object agent : withinDistance.query()) {
 			if (agent.getClass() == Auto.class) {
 				double locationOtherCarX = continuousSpace.getLocation(agent).getX();
+				double locationOtherCarY = continuousSpace.getLocation(agent).getY();
 				locationThisCarX = continuousSpace.getLocation(this).getX();
-				if (locationOtherCarX > locationThisCarX) {
+				locationThisCarY = continuousSpace.getLocation(this).getY();
+				if (locationOtherCarX > locationThisCarX && locationOtherCarY == locationThisCarY) {
 					double difference = locationOtherCarX - locationThisCarX;
 					if (difference < stdBuffer) {
 						sollBremsen = true;
@@ -133,80 +137,96 @@ public class Auto extends IMyAgent {
 					}
 				}
 			}
-			if (agent.getClass() == Hindernis.class) {
-				double locationHindernis = continuousSpace.getLocation(agent).getX();
-				locationThisCarX = continuousSpace.getLocation(this).getX();
-				if (locationHindernis > locationThisCarX) {
-					double difference = locationHindernis - locationThisCarX;
-					if (difference < stdBuffer) {
-						sollBremsen = true;
-						changeLaneIfPossible();
-						this.setSignalState("\\");
-					}
-						
-					if (difference < 20d) {					
-						//changeLaneIfPossible();
-						this.setSignalState("\\");	
-						
-					}
-				}
-			}
-
 		}
 		return sollBremsen;
+	}
+
+	private boolean isHindernisInRadius() {
+
+		boolean sollBremsen = false;
+		double locationThisCarX = continuousSpace.getLocation(this).getX();
+		double locationThisCarY = continuousSpace.getLocation(this).getY();
+
+		double locationHindernis = Hindernis.getInstance().getLocX();
+
+		if (locationHindernis > locationThisCarX && locationThisCarY == Hindernis.getInstance().getLocY()) {
+
+			double difference = locationHindernis - locationThisCarX;
+			if (difference < 30d) {
+				this.setSignalState("R");
+				System.out.println("differ" + carId + ": " + difference);
+				if (difference < stdBuffer) {
+					sollBremsen = true;
+					changeLaneIfPossible();
+				}
+			} else {
+				this.setSignalState(" ");
+			}
+		}
+
+		return sollBremsen;
+
+	}
+
+	@ProbeID
+	@Override
+	public String toString() {
+		return "Car " + this.carId;
 	}
 
 	private void changeLaneIfPossible() {
 		List<Double> carsInRadiusOnOppositeLane = getCarsInRadiusOnOppositeLane();
 		double locationNearestCarOppositeLane;
-		if(carsInRadiusOnOppositeLane.isEmpty()) {
+		if (carsInRadiusOnOppositeLane.isEmpty()) {
 			moveCarToOppositeLane();
-		}else if(!carsInRadiusOnOppositeLane.isEmpty()) {
+		} else if (!carsInRadiusOnOppositeLane.isEmpty()) {
 			locationNearestCarOppositeLane = Collections.max(carsInRadiusOnOppositeLane);
-			if (locationNearestCarOppositeLane < continuousSpace.getLocation(this).getX()-this.stdBuffer ) {
+			if (locationNearestCarOppositeLane < continuousSpace.getLocation(this).getX() - this.stdBuffer) {
 				moveCarToOppositeLane();
 			}
 		}
 	}
-	
+
 	private List<Double> getCarsInRadiusOnOppositeLane() {
-		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this, this.stdBuffer+1);
+		ContinuousWithin<Object> withinDistanceQuery = new ContinuousWithin<Object>(continuousSpace, this,
+				this.stdBuffer + 1);
 		List<Double> orderedAgentXAxisPositionList = new ArrayList<Double>();
 		double locationThisCarXAxis = continuousSpace.getLocation(this).getX();
 		double locationThisCarYAxis = continuousSpace.getLocation(this).getY();
-	
+
 		for (Object cars : withinDistanceQuery.query()) {
 			double locationCarXAxis = continuousSpace.getLocation(cars).getX();
 			double locationCarYAxis = continuousSpace.getLocation(cars).getY();
-			if(locationThisCarYAxis == leftLaneYPosition) {
-				if(locationCarYAxis == rightLaneYPosition &&
-						locationCarXAxis < locationThisCarXAxis + this.stdBuffer) {	
+			if (locationThisCarYAxis == leftLaneYPosition) {
+				if (locationCarYAxis == rightLaneYPosition
+						&& locationCarXAxis < locationThisCarXAxis + this.stdBuffer) {
 					orderedAgentXAxisPositionList.add(locationCarXAxis);
 				}
-			} else if(locationThisCarYAxis == rightLaneYPosition) {
-				if(locationCarYAxis == leftLaneYPosition &&
-						locationCarXAxis < locationThisCarXAxis + this.stdBuffer) {	
+			} else if (locationThisCarYAxis == rightLaneYPosition) {
+				if (locationCarYAxis == leftLaneYPosition && locationCarXAxis < locationThisCarXAxis + this.stdBuffer) {
 					orderedAgentXAxisPositionList.add(locationCarXAxis);
 				}
-			}	
+			}
 		}
 		return orderedAgentXAxisPositionList;
 	}
-	
+
 	private void moveCarToOppositeLane() {
 		double changeInYAxisPosition = 0d;
 		double locationThisCarYAxis = continuousSpace.getLocation(this).getY();
-		
-		if(locationThisCarYAxis == leftLaneYPosition) {
+
+		if (locationThisCarYAxis == leftLaneYPosition) {
 			this.setLabelState(1.0);
-			this.setSignalState("\\");
+			// this.setSignalState("R");
 			changeInYAxisPosition = -3d;
-		}else if(locationThisCarYAxis == rightLaneYPosition) {
+		} else if (locationThisCarYAxis == rightLaneYPosition) {
 			this.setLabelState(2.0);
-			this.setSignalState("/");
+			// this.setSignalState("L");
 			changeInYAxisPosition = 3d;
 		}
-		continuousSpace.moveTo(this, continuousSpace.getLocation(this).getX(), continuousSpace.getLocation(this).getY() + changeInYAxisPosition);
+		continuousSpace.moveTo(this, continuousSpace.getLocation(this).getX(),
+				continuousSpace.getLocation(this).getY() + changeInYAxisPosition);
+		this.setSignalState(" ");
 	}
 
 	public double getLabelState() {

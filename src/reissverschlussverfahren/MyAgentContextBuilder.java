@@ -18,7 +18,8 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 
 	private double stdBuffer = 4d;
 	private int carCount = 20;
-	
+	private double xHindernis;
+
 	public int getCarCount() {
 		return carCount;
 	}
@@ -44,12 +45,14 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		for (String s : p.getSchema().parameterNames()) {
 			System.out.println(s + "; ");
 		}
-		
+
 		this.setCarCount(p.getInteger("CarCount"));
 		this.setStdBuffer(p.getDouble("stdBuffer"));
- 
-		//int xdim = p.getInteger("spacewidth");
-		//int ydim = p.getInteger("spaceheight");
+
+		// int xdim = p.getInteger("spacewidth");
+		// int ydim = p.getInteger("spaceheight");
+
+		xHindernis = p.getDouble("hindernisXLoc");
 
 		ContinuousSpace<Object> continuousSpace = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null)
 				.createContinuousSpace("space", context, new RandomCartesianAdder(),
@@ -70,16 +73,17 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		// 20 Autos mit Random Geschwindigkeit und Random Spur hinzuf�gen
 		Double spawnPoint = 0d;
 		for (int i = 0; i < this.getCarCount(); i++) {
-			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d), 6d, -6d,this.getStdBuffer());
+			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d), 6d, -6d, this.getStdBuffer(), i+1);
 			context.add(auto);
 			spawnPoint = spawnPoint + 2;
 
 			continuousSpace.moveTo(auto, spawnPoint, spur());
 		}
 
-		Hindernis hindernis = new Hindernis();
+		Hindernis hindernis = Hindernis.getInstance();
+		hindernis.setLocX(xHindernis);
 		context.add(hindernis);
-		continuousSpace.moveTo(hindernis, 50.0d, 5d);
+		continuousSpace.moveTo(hindernis, hindernis.getLocX(), hindernis.getLocY());
 	}
 
 	private double geschwindigkeit(double min, double max) {
@@ -95,6 +99,5 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		else
 			return 4.5d;
 	}
-	
-	
+
 }
