@@ -19,13 +19,13 @@
 									
 		/>
 				<parameter name="stdBuffer" displayName="Sicherheitsabstand" type="double" 
-						defaultValue="3.0" 
+						defaultValue="50.0" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
 				<parameter name="hindernisXLoc" displayName="Position (Hindernis)" type="double" 
-						defaultValue="50.0" 
+						defaultValue="20.0" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
