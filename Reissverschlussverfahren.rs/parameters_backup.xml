@@ -13,7 +13,7 @@
 									
 		/>
 				<parameter name="CarCount" displayName="Anzahl Autos" type="int" 
-						defaultValue="35" 
+						defaultValue="20" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -25,7 +25,7 @@
 									
 		/>
 				<parameter name="hindernisXLoc" displayName="Position (Hindernis)" type="double" 
-						defaultValue="70.0" 
+						defaultValue="50.0" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
