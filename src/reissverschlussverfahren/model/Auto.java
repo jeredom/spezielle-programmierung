@@ -1,12 +1,16 @@
 package reissverschlussverfahren.model;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import reissverschlussverfahren.AutoUtils;
 import reissverschlussverfahren.IMyAgent;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.query.space.continuous.ContinuousWithin;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
@@ -59,6 +63,10 @@ public class Auto extends IMyAgent {
 	}
 
 	public void step() {
+		if (this.carId == 2) {
+			AutoUtils.writeAverageSpeedAllCars(continuousSpace);
+		}
+
 		if (!areCarsInRadius() && !isHindernisInRadius() && !letCarLane()) {
 			if (aktuelleGeschwindigkeit < hoechstgeschwindigkeit) {
 				if (shouldAccelerate()) {
@@ -137,6 +145,7 @@ public class Auto extends IMyAgent {
 					double difference = locationOtherCarX - locationThisCarX;
 					if (difference < stdBuffer) {
 						sollBremsen = true;
+						this.aktuelleGeschwindigkeit = 20d;
 						changeLaneIfPossible();
 					}
 				}
@@ -160,6 +169,7 @@ public class Auto extends IMyAgent {
 				this.setSignalState("R");
 				if (difference < stdBuffer) {
 					sollBremsen = true;
+					this.aktuelleGeschwindigkeit = 20d;
 					changeLaneIfPossible();
 				}
 			} else {
@@ -188,6 +198,7 @@ public class Auto extends IMyAgent {
 					if (locationAgentCarY == locationYHindernis) {
 						if (locationAgentCarX < locationXHindernis) {
 							sollBremsen = true;
+							this.aktuelleGeschwindigkeit = 20d;
 						}
 					}
 				}

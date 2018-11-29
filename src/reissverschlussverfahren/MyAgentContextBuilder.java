@@ -20,6 +20,7 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 	private int carCount = 20;
 	private double xHindernis;
 	private int agresivenessRatio;
+	private double maxAcceleration;
 
 	public int getCarCount() {
 		return carCount;
@@ -50,12 +51,10 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		this.setCarCount(p.getInteger("CarCount"));
 		this.setStdBuffer(p.getDouble("stdBuffer"));
 
-		// int xdim = p.getInteger("spacewidth");
-		// int ydim = p.getInteger("spaceheight");
-
 		xHindernis = p.getDouble("hindernisXLoc");
+		maxAcceleration = p.getDouble("maxAcceleration");
 		agresivenessRatio = p.getInteger("agresivenessRatio");
-		
+
 		ContinuousSpace<Object> continuousSpace = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null)
 				.createContinuousSpace("space", context, new RandomCartesianAdder(),
 						new repast.simphony.space.continuous.WrapAroundBorders(), 100, 7);
@@ -72,12 +71,11 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		context.add(street);
 		continuousSpace.moveTo(street, 50.0d, 3.5d);
 
-		// 20 Autos mit Random Geschwindigkeit und Random Spur hinzuf�gen
 		Double spawnPoint = 0d;
 		for (int i = 0; i < this.getCarCount(); i++) {
-			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d), 6d, -6d, this.getStdBuffer(), i + 1,
+			Auto auto = new Auto(continuousSpace, geschwindigkeit(60d, 100d), beschleunigung(maxAcceleration), -6d, this.getStdBuffer(), i + 1,
 					false);
-			if (i < this.getCarCount() * agresivenessRatio/100) {
+			if (i < this.getCarCount() * agresivenessRatio / 100) {
 				auto.setAgressiveness(true);
 			}
 			context.add(auto);
@@ -95,6 +93,11 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		Random r = new Random();
 		return min + (max - min) * r.nextDouble();
 	}
+	
+	private double beschleunigung(double max) {
+		Random r = new Random();
+		return 6d + (max - 6d) * r.nextDouble();
+	}
 
 	private double spur() {
 		Random random = new Random();
@@ -104,5 +107,4 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		else
 			return 4.5d;
 	}
-
 }

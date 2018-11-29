@@ -30,6 +30,12 @@
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
+				<parameter name="maxAcceleration" displayName="Max Beschleunigung" type="double" 
+						defaultValue="30.0" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
 				<parameter name="agresivenessRatio" displayName="Anteil agressiver Fahrer" type="int" 
 						defaultValue="30" 
 						isReadOnly="false" 
