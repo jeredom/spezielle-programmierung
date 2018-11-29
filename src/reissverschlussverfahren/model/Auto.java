@@ -49,9 +49,8 @@ public class Auto extends IMyAgent {
 	}
 
 	public void step() {
-
 		this.setLabelState(0.0);
-		if (!areCarsInRadius() && !isHindernisInRadius()) {
+		if (!areCarsInRadius() && !isHindernisInRadius() && !letCarLane()) {
 			if (aktuelleGeschwindigkeit < hoechstgeschwindigkeit) {
 				if (shouldAccelerate()) {
 					accelerate();
@@ -165,6 +164,30 @@ public class Auto extends IMyAgent {
 		}
 
 		return sollBremsen;
+	}
+
+	private boolean letCarLane() {
+		boolean sollBremsen = false;
+		double locationXHindernis = Hindernis.getInstance().getLocX();
+		double locationYHindernis = Hindernis.getInstance().getLocY();
+		double locationThisCarX = continuousSpace.getLocation(this).getX();
+		double locationThisCarY = continuousSpace.getLocation(this).getY();
+
+		double diff = locationXHindernis - locationThisCarX;
+		if (locationThisCarY != locationYHindernis && diff <= 15 && diff > 5) {
+			ContinuousWithin<Object> withinDistance = new ContinuousWithin<Object>(continuousSpace,
+					Hindernis.getInstance(), 5);
+			for (Object agent : withinDistance.query()) {
+				double locationAgentCarX = continuousSpace.getLocation(agent).getX();
+				double locationAgentCarY = continuousSpace.getLocation(agent).getY();
+				if (locationAgentCarY == locationYHindernis) {
+					if (locationAgentCarX < locationXHindernis) {
+						sollBremsen = true;
+					}
+				}
+			}
+		}
+		return sollBremsen;
 
 	}
 
@@ -177,11 +200,15 @@ public class Auto extends IMyAgent {
 	private void changeLaneIfPossible() {
 		List<Double> carsInRadiusOnOppositeLane = getCarsInRadiusOnOppositeLane();
 		double locationNearestCarOppositeLane;
-		if (carsInRadiusOnOppositeLane.isEmpty()) {
+		double locationXHindernis = Hindernis.getInstance().getLocX();
+		double locationThisCarX = continuousSpace.getLocation(this).getX();
+		double difference = locationXHindernis - locationThisCarX;
+		if (carsInRadiusOnOppositeLane.isEmpty() && difference < 30d ) {
 			moveCarToOppositeLane();
-		} else if (!carsInRadiusOnOppositeLane.isEmpty()) {
+		} else if (!carsInRadiusOnOppositeLane.isEmpty() && difference < 30d) {
 			locationNearestCarOppositeLane = Collections.max(carsInRadiusOnOppositeLane);
 			if (locationNearestCarOppositeLane < continuousSpace.getLocation(this).getX() - this.stdBuffer) {
+
 				moveCarToOppositeLane();
 			}
 		}
