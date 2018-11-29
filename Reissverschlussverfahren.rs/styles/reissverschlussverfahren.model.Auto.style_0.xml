@@ -1,15 +1,15 @@
 <repast.simphony.visualization.editedStyle.DefaultEditedStyleData2D>
   <shapeWkt>arrow</shapeWkt>
-  <size>45.0</size>
+  <size>35.0</size>
   <sizeMax>35.0</sizeMax>
   <sizeMin>1.0</sizeMin>
   <sizeScale>1.0</sizeScale>
   <label>getSignalState</label>
   <labelMethod>getSignalState</labelMethod>
-  <labelPosition>right</labelPosition>
+  <labelPosition>bottom</labelPosition>
   <labelPrecision>3</labelPrecision>
   <labelOffset>0.0</labelOffset>
-  <labelFontSize>36</labelFontSize>
+  <labelFontSize>20</labelFontSize>
   <labelFontType>1</labelFontType>
   <labelFontFamily>Arial</labelFontFamily>
   <labelColor>
