@@ -7,7 +7,7 @@
       <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
     <entry>
-      <string>reissverschlussverfahren.model.Hindernis</string>
+      <string>reissverschlussverfahren.model.Obstacle</string>
       <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
     <entry>
@@ -21,8 +21,8 @@
       <string>reissverschlussverfahren.model.Street.style_6.xml</string>
     </entry>
     <entry>
-      <string>reissverschlussverfahren.model.Hindernis</string>
-      <string>reissverschlussverfahren.model.Hindernis.style_0.xml</string>
+      <string>reissverschlussverfahren.model.Obstacle</string>
+      <string>reissverschlussverfahren.model.Obstacle.style_0.xml</string>
     </entry>
     <entry>
       <string>reissverschlussverfahren.model.Auto</string>
@@ -50,7 +50,7 @@
       <int>0</int>
     </entry>
     <entry>
-      <string>reissverschlussverfahren.model.Hindernis</string>
+      <string>reissverschlussverfahren.model.Obstacle</string>
       <int>2</int>
     </entry>
     <entry>

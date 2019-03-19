@@ -3,7 +3,7 @@ package reissverschlussverfahren;
 import java.util.Random;
 
 import reissverschlussverfahren.model.Auto;
-import reissverschlussverfahren.model.Hindernis;
+import reissverschlussverfahren.model.Obstacle;
 import reissverschlussverfahren.model.Street;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
@@ -83,7 +83,7 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 			continuousSpace.moveTo(auto, spawnPoint, spur());
 		}
 
-		Hindernis hindernis = Hindernis.getInstance();
+		Obstacle hindernis = Obstacle.getInstance();
 		hindernis.setLocX(xHindernis);
 		context.add(hindernis);
 		continuousSpace.moveTo(hindernis, hindernis.getLocX(), hindernis.getLocY());

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import reissverschlussverfahren.AutoUtils;
+import reissverschlussverfahren.CarUtils;
 import reissverschlussverfahren.IMyAgent;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduleParameters;
@@ -64,7 +64,7 @@ public class Auto extends IMyAgent {
 
 	public void step() {
 		if (this.carId == 2) {
-			AutoUtils.writeAverageSpeedAllCars(continuousSpace);
+			CarUtils.writeAverageSpeedAllCars(continuousSpace);
 		}
 
 		if (!areCarsInRadius() && !isHindernisInRadius() && !letCarLane()) {
@@ -160,9 +160,9 @@ public class Auto extends IMyAgent {
 		double locationThisCarX = continuousSpace.getLocation(this).getX();
 		double locationThisCarY = continuousSpace.getLocation(this).getY();
 
-		double locationHindernis = Hindernis.getInstance().getLocX();
+		double locationHindernis = Obstacle.getInstance().getLocX();
 
-		if (locationHindernis > locationThisCarX && locationThisCarY == Hindernis.getInstance().getLocY()) {
+		if (locationHindernis > locationThisCarX && locationThisCarY == Obstacle.getInstance().getLocY()) {
 
 			double difference = locationHindernis - locationThisCarX;
 			if (difference < 30d) {
@@ -182,15 +182,15 @@ public class Auto extends IMyAgent {
 
 	private boolean letCarLane() {
 		boolean sollBremsen = false;
-		double locationXHindernis = Hindernis.getInstance().getLocX();
-		double locationYHindernis = Hindernis.getInstance().getLocY();
+		double locationXHindernis = Obstacle.getInstance().getLocX();
+		double locationYHindernis = Obstacle.getInstance().getLocY();
 		double locationThisCarX = continuousSpace.getLocation(this).getX();
 		double locationThisCarY = continuousSpace.getLocation(this).getY();
 
 		double diff = locationXHindernis - locationThisCarX;
 		if (locationThisCarY != locationYHindernis && diff <= 7 && diff > 6 && this.agressiveness == false) {
 			ContinuousWithin<Object> withinDistance = new ContinuousWithin<Object>(continuousSpace,
-					Hindernis.getInstance(), 5);
+					Obstacle.getInstance(), 5);
 			for (Object agent : withinDistance.query()) {
 				if (agent instanceof Auto) {
 					double locationAgentCarX = continuousSpace.getLocation(agent).getX();
@@ -211,8 +211,8 @@ public class Auto extends IMyAgent {
 	private void changeLaneIfPossible() {
 		List<Double> carsInRadiusOnOppositeLane = getCarsInRadiusOnOppositeLane();
 		double locationNearestCarOppositeLane;
-		double locationXHindernis = Hindernis.getInstance().getLocX();
-		double locationYHindernis = Hindernis.getInstance().getLocY();
+		double locationXHindernis = Obstacle.getInstance().getLocX();
+		double locationYHindernis = Obstacle.getInstance().getLocY();
 
 		double locationThisCarX = continuousSpace.getLocation(this).getX();
 		double locationThisCarY = continuousSpace.getLocation(this).getY();
