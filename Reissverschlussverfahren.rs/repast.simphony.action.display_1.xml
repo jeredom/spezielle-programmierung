@@ -1,32 +1,32 @@
-<repast.simphony.visualization.engine.CartesianDisplayDescriptor simphonyVersion="2.6.0">
+<repast.simphony.visualization.engine.CartesianDisplayDescriptor simphonyVersion="2.5.0">
   <name>New Display</name>
   <type>2D</type>
   <styles>
-    <entry>
-      <string>reissverschlussverfahren.model.Street</string>
-      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
-    </entry>
     <entry>
       <string>reissverschlussverfahren.model.Obstacle</string>
       <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
     <entry>
-      <string>reissverschlussverfahren.model.Auto</string>
+      <string>reissverschlussverfahren.model.Street</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
+    </entry>
+    <entry>
+      <string>reissverschlussverfahren.model.Car</string>
       <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
-      <string>reissverschlussverfahren.model.Street</string>
-      <string>reissverschlussverfahren.model.Street.style_6.xml</string>
-    </entry>
-    <entry>
       <string>reissverschlussverfahren.model.Obstacle</string>
       <string>reissverschlussverfahren.model.Obstacle.style_0.xml</string>
     </entry>
     <entry>
-      <string>reissverschlussverfahren.model.Auto</string>
-      <string>reissverschlussverfahren.model.Auto.style_0.xml</string>
+      <string>reissverschlussverfahren.model.Street</string>
+      <string>reissverschlussverfahren.model.Street.style_6.xml</string>
+    </entry>
+    <entry>
+      <string>reissverschlussverfahren.model.Car</string>
+      <string>reissverschlussverfahren.model.Car.style_0.xml</string>
     </entry>
   </editedStyles>
   <netStyles/>
@@ -46,12 +46,12 @@
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
-      <string>reissverschlussverfahren.model.Street</string>
-      <int>0</int>
-    </entry>
-    <entry>
       <string>reissverschlussverfahren.model.Obstacle</string>
       <int>2</int>
+    </entry>
+    <entry>
+      <string>reissverschlussverfahren.model.Street</string>
+      <int>0</int>
     </entry>
     <entry>
       <string>reissverschlussverfahren.model.Auto</string>

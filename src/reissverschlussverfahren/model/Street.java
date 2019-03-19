@@ -10,8 +10,25 @@ import reissverschlussverfahren.IMyAgent;
  *  
  *  Style : styles\reissverschlussverfahren.model.Street.style_0.xml
  *  Picture : icons\street_ic.png
+ *  
+ *  Attributes :
+ *  	Constants :
+ * 			- xStreet			x-Location of street agent
+ *  		- yStreet			y-Location of street agent 
  */
 
 public class Street extends IMyAgent {
 
+	private final double xStreet = 50.0d;
+	private final double yStreet = 3.5d;
+	
+	public double getxStreet() {
+		return xStreet;
+	}
+	public double getyStreet() {
+		return yStreet;
+	}
+	
+	
+	
 }

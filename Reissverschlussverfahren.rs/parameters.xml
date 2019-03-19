@@ -18,6 +18,12 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
+				<parameter name="speedAmplitude" displayName="Speed Amplitude" type="double" 
+						defaultValue="3.0" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
 				<parameter name="stdBuffer" displayName="Sicherheitsabstand" type="double" 
 						defaultValue="3.0" 
 						isReadOnly="false" 
@@ -31,6 +37,12 @@
 									
 		/>
 				<parameter name="maxAcceleration" displayName="Max Beschleunigung" type="double" 
+						defaultValue="30.0" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+				<parameter name="speedLimit" displayName="Speed Limit" type="double" 
 						defaultValue="30.0" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"

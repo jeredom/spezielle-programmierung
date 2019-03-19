@@ -3,7 +3,7 @@ package reissverschlussverfahren;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import reissverschlussverfahren.model.Auto;
+import reissverschlussverfahren.model.Car;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -25,8 +25,8 @@ public class CarUtils {
 		int summ = 0;
 
 		for (Object car : continuousSpace.getObjects()) {
-			if (car instanceof Auto) {
-				summ += ((Auto) car).aktuelleGeschwindigkeit;
+			if (car instanceof Car) {
+				summ += ((Car) car).aktuelleGeschwindigkeit;
 			}
 		}
 		return summ / carCount;
