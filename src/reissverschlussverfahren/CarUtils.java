@@ -26,7 +26,7 @@ public class CarUtils {
 
 		for (Object car : continuousSpace.getObjects()) {
 			if (car instanceof Car) {
-				summ += ((Car) car).aktuelleGeschwindigkeit;
+				summ += ((Car) car).currentVelocity;
 			}
 		}
 		return summ / carCount;
@@ -45,7 +45,7 @@ public class CarUtils {
 		final String NEW_LINE_SEPARATOR = "\n";
 
 		try {
-			fileWriter = new FileWriter("AverageSpeedAllCars", true);
+			fileWriter = new FileWriter("AverageSpeedAllCarsCSV.csv", true);
 
 			fileWriter.append(NEW_LINE_SEPARATOR);
 			fileWriter.append(String.valueOf(calculateAverageSpeedAllCars(continuousSpace)));

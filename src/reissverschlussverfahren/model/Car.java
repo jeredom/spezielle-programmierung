@@ -18,13 +18,13 @@ import repast.simphony.ui.probe.ProbeID;
 
 public class Car extends IMyAgent {
 
-  private double hoechstgeschwindigkeit;
-  public final Double maxPositiveBeschleunigung;
-  public final Double maxNegativeBeschleunigung;
-  public Double aktuelleGeschwindigkeit = 0d;
+  private double topSpeed;
+  public final Double maxPositiveAcceleration;
+  public final Double maxNegativeAcceleration;
+  public Double currentVelocity = 0d;
   public Double lowestSpeedAfterBrake = 20d;
-  private double rightLaneYPosition = 1.5d;
-  private double leftLaneYPosition = 4.5d;
+  final private double rightLaneYPosition = 1.5d;
+  final private double leftLaneYPosition = 4.5d;
   private ContinuousSpace<Object> continuousSpace;
   private String signalState = " ";
   private double stdRadius = 3d;
@@ -42,8 +42,8 @@ public class Car extends IMyAgent {
       boolean agressiveness) {
     this.continuousSpace = continuousSpace;
     //this.hoechstgeschwindigkeit = hoechstgeschwindigkeit;
-    this.maxPositiveBeschleunigung = maxPositiveBeschleunigung;
-    this.maxNegativeBeschleunigung = maxNegativeBeschleunigung;
+    this.maxPositiveAcceleration = maxPositiveBeschleunigung;
+    this.maxNegativeAcceleration = maxNegativeBeschleunigung;
     this.carId = carId;
     this.agressiveness = agressiveness;
 
@@ -52,7 +52,7 @@ public class Car extends IMyAgent {
   }
 
   public void setHoechstgeschwindigkeit(double hoechstgeschwindigkeit) {
-	this.hoechstgeschwindigkeit = hoechstgeschwindigkeit;
+	this.topSpeed = hoechstgeschwindigkeit;
   }
 
   public boolean isAgressiveness() {
@@ -114,7 +114,7 @@ public class Car extends IMyAgent {
    * if Actual < highest return true else return false
    */
   private boolean checkActualSpeedToAccelerate() {
-    if (aktuelleGeschwindigkeit < hoechstgeschwindigkeit) {
+    if (currentVelocity < topSpeed) {
       return false;
     } else {
       return false;
@@ -181,7 +181,7 @@ public class Car extends IMyAgent {
    * the actual speed
    */
   private void accelerate() {
-    Double differenz = hoechstgeschwindigkeit - aktuelleGeschwindigkeit;
+    Double differenz = topSpeed - currentVelocity;
     NdPoint newLocation = new NdPoint(getNewXLocation(differenz),
         continuousSpace.getLocation(this).getY());
     continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());
@@ -194,13 +194,13 @@ public class Car extends IMyAgent {
    */
   private double getNewXLocation(double difference) {
     Double neuXAchsenLocation;
-    if (difference > maxPositiveBeschleunigung) {
+    if (difference > maxPositiveAcceleration) {
       neuXAchsenLocation = continuousSpace.getLocation(this).getX()
-          + (aktuelleGeschwindigkeit + maxPositiveBeschleunigung) / timeDelay;
+          + (currentVelocity + maxPositiveAcceleration) / timeDelay;
     } else {
       neuXAchsenLocation =
           continuousSpace.getLocation(this).getX()
-              + (aktuelleGeschwindigkeit + difference) / timeDelay;
+              + (currentVelocity + difference) / timeDelay;
     }
     return neuXAchsenLocation;
   }
@@ -209,10 +209,10 @@ public class Car extends IMyAgent {
    * changing the actual speed after acceleration
    */
   private void updateTheActualSpeed(double difference) {
-    if (difference > maxPositiveBeschleunigung) {
-      aktuelleGeschwindigkeit = aktuelleGeschwindigkeit + maxPositiveBeschleunigung;
+    if (difference > maxPositiveAcceleration) {
+      currentVelocity = currentVelocity + maxPositiveAcceleration;
     } else {
-      aktuelleGeschwindigkeit = hoechstgeschwindigkeit;
+      currentVelocity = topSpeed;
     }
   }
 
@@ -222,7 +222,7 @@ public class Car extends IMyAgent {
    */
   private void driveWithCurrentSpeed() {
     Double neuXAchsenLocation =
-        continuousSpace.getLocation(this).getX() + (aktuelleGeschwindigkeit / timeDelay);
+        continuousSpace.getLocation(this).getX() + (currentVelocity / timeDelay);
     NdPoint newLocation = new NdPoint(neuXAchsenLocation, continuousSpace.getLocation(this).getY());
     continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());
   }
@@ -232,7 +232,7 @@ public class Car extends IMyAgent {
    */
   private void driveWithMaximumSpeed() {
     Double neuXAchsenLocation =
-        continuousSpace.getLocation(this).getX() + (hoechstgeschwindigkeit / timeDelay);
+        continuousSpace.getLocation(this).getX() + (topSpeed / timeDelay);
     NdPoint newLocation = new NdPoint(neuXAchsenLocation, continuousSpace.getLocation(this).getY());
     continuousSpace.moveTo(this, newLocation.getX(), newLocation.getY());
   }
@@ -246,7 +246,7 @@ public class Car extends IMyAgent {
     for (Car car : getCarsInRadiusOfThisCar(this.stdRadius + 2)) {
       if (isCarBeforeInRadius(car) && isCarInSameLine(car)) {
         if (getDifferenceToCarBefore(car) < stdRadius) {
-          this.aktuelleGeschwindigkeit = lowestSpeedAfterBrake;
+          this.currentVelocity = lowestSpeedAfterBrake;
           changeLaneIfPossible();
           return true;
         }
@@ -350,7 +350,7 @@ public class Car extends IMyAgent {
         this.setSignalState("R");
         if (getDifferenceToObstacle() < stdRadius) {
           sollBremsen = true;
-          this.aktuelleGeschwindigkeit = this.lowestSpeedAfterBrake;
+          this.currentVelocity = this.lowestSpeedAfterBrake;
           changeLaneIfPossible();
         }
       } else {
@@ -374,7 +374,7 @@ public class Car extends IMyAgent {
         if (this.agressiveness == false) {
           for (Car car : getCarsInRadiusOfObstacle()) {
             if (checkCarsBetweenCarAndObstacle(car)) {
-              this.aktuelleGeschwindigkeit = this.lowestSpeedAfterBrake;
+              this.currentVelocity = this.lowestSpeedAfterBrake;
               letCarLane = true;
             }
           }

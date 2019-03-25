@@ -130,14 +130,17 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		speedAmplitude = p.getDouble("speedAmplitude");
 		
 		// Create the continuous space from default factory
+		Street street = Street.getInstance();
+		
 		
 		ContinuousSpace<Object> continuousSpace = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null)
 				.createContinuousSpace("space", context, new RandomCartesianAdder(),
-						new repast.simphony.space.continuous.WrapAroundBorders(), streetXSize, streetYSize);
+						new repast.simphony.space.continuous.WrapAroundBorders(), street.getSizeX(), street.getSizeY());
 		
-		// Sensor Netzwerk irgendwo genutzt?!
-		
-		NetworkFactoryFinder.createNetworkFactory(null).createNetwork("SensorNetwork", context, false);
+		/**
+		 *  Sensor Network, could be integrated for analyzing traffic in an additional view
+		 *  NetworkFactoryFinder.createNetworkFactory(null).createNetwork("SensorNetwork", context, false);
+		 */
 
 		// Add agents via method addAgentsToContinuousSpace from defined space to context
 		
@@ -155,9 +158,9 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 	private void addAgentsToContinuousSpace(Context<IMyAgent> context, ContinuousSpace<Object> continuousSpace) {
 
 		// Add the street to its respective position
-		Street street = new Street();
+		Street street = Street.getInstance();
 		context.add(street);
-		continuousSpace.moveTo(street, street.getxStreet(), street.getyStreet());
+		continuousSpace.moveTo(street, street.getLocX(), street.getLocY());
 
 		// Add cars one by one and create a continuous pattern by starting to spawn them from a starting point at x=0 
 		Double spawnPoint = 0d;
