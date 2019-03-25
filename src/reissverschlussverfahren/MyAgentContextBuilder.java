@@ -24,24 +24,31 @@ import repast.simphony.space.continuous.RandomCartesianAdder;
 public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 
 	/*  Description of attributes :
-	 * 		connected with parameters :
-	 *  		- stdBuffer			safety distance between the next car in a lane and the car before 
+	 * 		connected with parameters : 
 	 *  		- carCount			number of cars in the model
 	 *  		- xObstacle			x-Location of the obstacle in the space / on the street
 	 *  		- agresivnessRatio	ratio of aggressive drivers/cars in the model
 	 *  		- maxAcceleration	defines the maximum acceleration drivers/cars will be able to use
-	 *  	other :
-	 *  		- maxAccList		List of values for maximum acceleration 
+	 *  	other (constants):
+	 *  		- maxAccList			List of values for maximum acceleration 
+	 *  		- rightLaneYPosition	location of right Lane axis
+	 *  		- leftLaneYPosition		location of left Lane axis
+	 *  		- stoppingAcc			negative value for acceleration of break process
+	 *  		- stdBuffer				safety distance between the next car in a lane and the car before
 	 */
-	private double stdBuffer = 4d;
+	
 	private int carCount = 20;
 	private double xObstacle;
 	private int agresivenessRatio;
 	private double speedLimit;
 	private double speedAmplitude;
 	
-	private double rightLaneYPosition = 1.5d;
-	private double leftLaneYPosition = 4.5d;
+	final private double rightLaneYPosition = 1.5d;
+	final private double leftLaneYPosition = 4.5d;
+	final private double stoppingAcc = -6.0d;
+	final private double defaultGap = 4.0d;
+	final private double streetXSize = 100.0d;
+	final private double streetYSize = 7.0d;
 	
 	/*    	Pattern
 	 * 		- 20% category fast
@@ -50,17 +57,19 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 	 *   
 	 *   	- category fast = 30d
 	 *   	- category normal = 22d
-	 *   	- category slow = 15d  
+	 *   	- category slow = 15d
+	 *   
+	 *   Could be integrated as parameters
 	 */
 	
-	private int ratioFast = 20;
-	private double accFast = 30d;
+	final private int ratioFast = 20;
+	final private double accFast = 30d;
 	
-	private int ratioNormal = 50;
-	private double accNormal = 22d;
+	final private int ratioNormal = 50;
+	final private double accNormal = 22d;
 	
-	private int ratioSlow = 30;
-	private double accSlow = 15d;
+	final private int ratioSlow = 30;
+	final private double accSlow = 15d;
 
 	
 	public int getCarCount() {
@@ -69,14 +78,6 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 
 	public void setCarCount(int carCount) {
 		this.carCount = carCount;
-	}
-
-	public double getStdBuffer() {
-		return stdBuffer;
-	}
-
-	public void setStdBuffer(double stdBuffer) {
-		this.stdBuffer = stdBuffer;
 	}
 
 	/*
@@ -98,8 +99,9 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 			maxAccList[carnumber] = accSlow;
 			carnumber++;
 		}	
-		while(carnumber <= this.getCarCount()){
-			maxAccList[carnumber] = 22d;
+		while(carnumber < this.getCarCount()){
+			maxAccList[carnumber] = accNormal;
+			carnumber++;
 		}
 		
 		Collections.shuffle(Arrays.asList(maxAccList));
@@ -111,9 +113,6 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 	@Override
 	public Context<IMyAgent> build(Context<IMyAgent> context) {
 		
-		// Funktioniert das?!
-		// RunEnvironment.getInstance().setScheduleTickDelay(20);
-
 		Parameters p = RunEnvironment.getInstance().getParameters();
 		
 		// Debugging - Print all parameters in the console to see if the supposed ones are available
@@ -124,7 +123,6 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 
 		// Set class attributes to parameter values
 		
-		stdBuffer = p.getDouble("stdBuffer");
 		carCount =  p.getInteger("CarCount");
 		xObstacle = p.getDouble("hindernisXLoc");
 		agresivenessRatio = p.getInteger("agresivenessRatio");
@@ -135,7 +133,7 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		
 		ContinuousSpace<Object> continuousSpace = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null)
 				.createContinuousSpace("space", context, new RandomCartesianAdder(),
-						new repast.simphony.space.continuous.WrapAroundBorders(), 100, 7);
+						new repast.simphony.space.continuous.WrapAroundBorders(), streetXSize, streetYSize);
 		
 		// Sensor Netzwerk irgendwo genutzt?!
 		
@@ -163,9 +161,10 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 
 		// Add cars one by one and create a continuous pattern by starting to spawn them from a starting point at x=0 
 		Double spawnPoint = 0d;
-		//double maxAccList[] = fillMaxAccList();
+		double maxAccList[] = new double[this.getCarCount()];
+		maxAccList = fillMaxAccList();
 		for (int i = 0; i < this.getCarCount(); i++) {
-			Car car = new Car(continuousSpace, 30d, -6d, this.getStdBuffer(), i + 1,
+			Car car = new Car(continuousSpace,maxAccList[i] , stoppingAcc, defaultGap, i + 1,
 					false);
 			
 			// Determine whether the car is aggressive respective to the given aggressiveness ratio
