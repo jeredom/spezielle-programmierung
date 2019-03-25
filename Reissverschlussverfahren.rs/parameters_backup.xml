@@ -6,12 +6,6 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
-				<parameter name="spaceborder rule" displayName="space border rule" type="java.lang.String" 
-						defaultValue="bouncy" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-									
-		/>
 				<parameter name="CarCount" displayName="Anzahl Autos" type="int" 
 						defaultValue="35" 
 						isReadOnly="false" 
@@ -24,20 +18,8 @@
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
-				<parameter name="stdBuffer" displayName="Sicherheitsabstand" type="double" 
-						defaultValue="3.0" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
-									
-		/>
 				<parameter name="hindernisXLoc" displayName="Position (Hindernis)" type="double" 
 						defaultValue="70.0" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
-									
-		/>
-				<parameter name="maxAcceleration" displayName="Max Beschleunigung" type="double" 
-						defaultValue="30.0" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
