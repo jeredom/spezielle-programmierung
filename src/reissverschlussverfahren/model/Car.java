@@ -115,7 +115,7 @@ public class Car extends IMyAgent {
    */
   private boolean checkActualSpeedToAccelerate() {
     if (currentVelocity < topSpeed) {
-      return false;
+      return true;
     } else {
       return false;
     }

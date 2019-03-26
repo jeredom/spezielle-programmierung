@@ -45,8 +45,7 @@ public class CarUtils {
 		final String NEW_LINE_SEPARATOR = "\n";
 
 		try {
-			fileWriter = new FileWriter("AverageSpeedAllCarsCSV.csv", true);
-
+			fileWriter = new FileWriter("AverageSpeedAllCars.csv", true);
 			fileWriter.append(NEW_LINE_SEPARATOR);
 			fileWriter.append(String.valueOf(calculateAverageSpeedAllCars(continuousSpace)));
 
