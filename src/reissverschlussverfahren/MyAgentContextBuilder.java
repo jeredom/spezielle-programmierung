@@ -129,6 +129,9 @@ public class MyAgentContextBuilder implements ContextBuilder<IMyAgent> {
 		speedLimit = p.getDouble("speedLimit");
 		speedAmplitude = p.getDouble("speedAmplitude");
 		
+		//
+		CarUtils.setFilename("Result_" + carCount + "_" + agresivenessRatio + "_" + speedLimit + "_" + speedAmplitude + ".csv");
+		
 		// Create the continuous space from default factory
 		Street street = Street.getInstance();
 		

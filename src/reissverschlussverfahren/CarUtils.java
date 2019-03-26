@@ -13,10 +13,20 @@ import repast.simphony.space.continuous.ContinuousSpace;
  */
 
 public class CarUtils {
+	
+	private static String filename;
+	
+	public static void setFilename(String filename) {
+		CarUtils.filename = filename;
+	}
+
+	public static String getFilename() {
+		return filename;
+	}
 
 	/* This method calculates the current average speed of all cars in the model.
 	 * This is done by getting all current speed values of the cars and dividing them by their count as saved in the parameter "CarCount".
-	 */
+	 */	
 	
 	private static int calculateAverageSpeedAllCars(ContinuousSpace<Object> continuousSpace) {
 		Parameters p = RunEnvironment.getInstance().getParameters();
@@ -45,7 +55,8 @@ public class CarUtils {
 		final String NEW_LINE_SEPARATOR = "\n";
 
 		try {
-			fileWriter = new FileWriter("AverageSpeedAllCars.csv", true);
+			//fileWriter = new FileWriter("AverageSpeedAllCars.csv", true);
+			fileWriter = new FileWriter(getFilename(), true);
 			fileWriter.append(NEW_LINE_SEPARATOR);
 			fileWriter.append(String.valueOf(calculateAverageSpeedAllCars(continuousSpace)));
 
